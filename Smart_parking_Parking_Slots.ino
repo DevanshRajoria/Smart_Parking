@@ -72,7 +72,7 @@ void loop() {
     PrintOnMyLocalIP(i);
   }
 
-  if(ir2 == 1){     // 30 is a sensor threshold value
+  if(ir2 == 1){     
     i = SendWithMessage(host,"zyro/1.html/1.html");
     digitalWrite(ledpin,1);
     PrintOnMyLocalIP(i);
