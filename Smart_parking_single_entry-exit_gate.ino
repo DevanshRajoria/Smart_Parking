@@ -1,4 +1,4 @@
-//                                        ************************ENTRY GATE CONTROL***************************
+//                                    ************************ENTRY-EXIT GATE CONTROL***************************
 
 // IR Sensor Pins
 int ir_entry_sen1 = 2;
