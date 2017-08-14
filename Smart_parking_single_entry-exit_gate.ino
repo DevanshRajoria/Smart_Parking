@@ -1,18 +1,19 @@
-//                                    ************************ENTRY-EXIT GATE CONTROL***************************
+//                                        ************************ENTRY GATE CONTROL***************************
 
 // IR Sensor Pins
-int ir_entry_sen1 = 2;
-int ir_entry_sen2 = 3;
+int ir_sen1 = 2;
+int ir_sen2 = 3;
 
 // Led Pins
 int ledpin = 13;
 int parking_full_led = 12;
+int parking_empty_led = 11;
 
 // Motor Pins
 int m1_forward;
 int m1_backward;
 
-int MAX_SLOTS = 4;
+int MAX_SLOTS = 3;
 int count = -1;
 
 boolean entry_flag1 = false;
@@ -21,74 +22,87 @@ boolean exit_flag1 = false;
 void setup(){
   
   // Initialize IR Entry Sensor pins
-  pinMode(ir_entry_sen1,INPUT);
-  pinMode(ir_entry_sen2,INPUT);
+  pinMode(ir_sen1,INPUT);
+  pinMode(ir_sen2,INPUT);
   
   // Initialize Led pin
   pinMode(ledpin,OUTPUT);
   pinMode(parking_full_led,OUTPUT);
+  pinMode(parking_empty_led,OUTPUT);
 
+  Serial.begin(9600);
 }
 
 void loop(){
   
-  int ir1=digitalRead(ir_entry_sen1);
-  int ir2=digitalRead(ir_entry_sen2);
-  
-    
-    int entry_gate_status; // get the status if the gate needs to be ON of OFF  
-  
-    entry_gate_status = is_vehicle_at_gate(ir1,ir2);
-    if(entry_gate_status == 1){
-      gate_on();
-    } 
-    else if(entry_gate_status == 0){
-      gate_off(); 
-   }
-  
+  int ir1 = digitalRead(ir_sen1);
+  int ir2 = digitalRead(ir_sen2);
+
+  entry_gate(ir1,ir2);
+  exit_gate(ir1,ir2);
+  delay(1000);
 }
 
-int is_vehicle_at_gate(int ir1,int ir2){
- 
-  if(ir1 == 1){
-    entry_flag1 = true;
-  }
-  if(ir2 == 1 && entry_flag1 == true){
-    if(count >= MAX_SLOTS - 1){
-      digitalWrite(parking_full_led,1);
-      return 0;
-    }
-    digitalWrite(parking_full_led,0);
-    count = count + 1;
-    entry_flag1 = false;
-    return 1;
-  }
+void entry_gate(int ir1,int ir2){
+ if(count < MAX_SLOTS - 1){
+    digitalWrite(parking_empty_led,0);
+    lcd_display_Welcome();
 
+    if(ir1 == 1){
+      entry_flag1 = true;
+      gate_open();    
+    }
+    if(ir2 == 1 && entry_flag1 == true){
+      entry_flag1 = false;
+      count = count + 1;
+      gate_closed();      
+    }
+    Serial.println("ENTRY :");
+    Serial.println(count);
+ }
+ else{
+    lcd_display_full();
+    digitalWrite(parking_full_led,1);
+ }
+}
+
+void exit_gate(int ir1,int ir2){
+ if(count == -1){
+    lcd_display_Welcome();
+    digitalWrite(parking_empty_led,1);
+ }
+ else{
   if(ir2 == 1){
     exit_flag1 = true;
-  }
+    gate_open();
+   }
   if(ir1 == 1 && exit_flag1 == true){
-    if(count < 0){
-      digitalWrite(parking_full_led,1);
-      return 0;
-    }
-    digitalWrite(parking_full_led,0);
-    count = count - 1;
     exit_flag1 = false;
-    return 1;
-  }
-  
-  return 0;
-
+    count = count - 1;
+    gate_closed();
+   }
+    digitalWrite(parking_full_led,0);
+    Serial.println("EXIT :");
+    Serial.println(count);
+ }
 }
 
-void gate_on(){
+void gate_open(){
   digitalWrite(ledpin,1);
   delay(100);
   digitalWrite(ledpin,0);
 }
 
-void gate_off(){
+void gate_closed(){
+  digitalWrite(ledpin,1);
+  delay(100);
   digitalWrite(ledpin,0);
 }
 
+void lcd_display_Welcome(){
+  
+}
+
+void lcd_display_full(){
+  
+}
