@@ -33,14 +33,24 @@ void setup(){
   Serial.begin(9600);
 }
 
+boolean temp1 = false;
+boolean temp2 = false;
+
 void loop(){
   
   int ir1 = digitalRead(ir_sen1);
   int ir2 = digitalRead(ir_sen2);
 
-  entry_gate(ir1,ir2);
-  exit_gate(ir1,ir2);
-  delay(1000);
+  if((ir1 == 1 && temp2 == false) || temp1 == true){
+    temp1 = true;
+    entry_gate(ir1,ir2);
+    delay(500);   
+  }
+  else if((ir2 == 1 && temp1 == false) || temp2 == true){
+    temp2 = true;
+    exit_gate(ir1,ir2);  
+    delay(500);
+  }
 }
 
 void entry_gate(int ir1,int ir2){
@@ -53,6 +63,7 @@ void entry_gate(int ir1,int ir2){
       gate_open();    
     }
     if(ir2 == 1 && entry_flag1 == true){
+      temp1 = false;
       entry_flag1 = false;
       count = count + 1;
       gate_closed();      
@@ -77,6 +88,7 @@ void exit_gate(int ir1,int ir2){
     gate_open();
    }
   if(ir1 == 1 && exit_flag1 == true){
+    temp2 = false;
     exit_flag1 = false;
     count = count - 1;
     gate_closed();
