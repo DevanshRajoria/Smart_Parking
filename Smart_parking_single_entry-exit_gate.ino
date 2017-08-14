@@ -13,11 +13,14 @@ int parking_empty_led = 11;
 int m1_forward;
 int m1_backward;
 
-int MAX_SLOTS = 3;
-int count = -1;
+int MAX_SLOTS = 3;      // Maximum Parking Slots Available
 
+int count = -1;        
 boolean entry_flag1 = false;
 boolean exit_flag1 = false;
+
+boolean temp1 = false;
+boolean temp2 = false;
 
 void setup(){
   
@@ -33,11 +36,8 @@ void setup(){
   Serial.begin(9600);
 }
 
-boolean temp1 = false;
-boolean temp2 = false;
-
 void loop(){
-  
+  // Reading IR sensors
   int ir1 = digitalRead(ir_sen1);
   int ir2 = digitalRead(ir_sen2);
 
@@ -53,7 +53,7 @@ void loop(){
   }
 }
 
-void entry_gate(int ir1,int ir2){
+void entry_gate(int ir1,int ir2){       // Function for entry
  if(count < MAX_SLOTS - 1){
     digitalWrite(parking_empty_led,0);
     lcd_display_Welcome();
@@ -77,10 +77,11 @@ void entry_gate(int ir1,int ir2){
  }
 }
 
-void exit_gate(int ir1,int ir2){
+void exit_gate(int ir1,int ir2){        // Function for exit
  if(count == -1){
     lcd_display_Welcome();
     digitalWrite(parking_empty_led,1);
+    temp2 = false;
  }
  else{
   if(ir2 == 1){
@@ -99,19 +100,19 @@ void exit_gate(int ir1,int ir2){
  }
 }
 
-void gate_open(){
+void gate_open(){             // Parking Gate Open
   digitalWrite(ledpin,1);
   delay(100);
   digitalWrite(ledpin,0);
 }
 
-void gate_closed(){
+void gate_closed(){           // Parking Gate Closed
   digitalWrite(ledpin,1);
   delay(100);
   digitalWrite(ledpin,0);
 }
 
-void lcd_display_Welcome(){
+void lcd_display_Welcome(){   
   
 }
 
