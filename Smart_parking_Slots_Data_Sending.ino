@@ -13,8 +13,8 @@ int ir_slot2 = 4;
 // Led 
 int ledpin = 16;
 
-char* ssid = "*******";     // ssid of your WiFi
-char* password = "*******";    // password of your WiFi
+char* ssid = "Redmi";     // ssid of your WiFi
+char* password = "shivam1234";    // password of your WiFi
 
 String httpurl;
 String AnswerOfClient;
@@ -22,8 +22,8 @@ String AnswerOfClient;
 String SendWithMessage(String IP,String url){
   httpurl = "http://";
   httpurl += IP;
-  httpurl += "/";
   httpurl += url;
+  httpurl += "/";  
   http.begin(httpurl);
   http.GET();
   AnswerOfClient = (http.getString());
@@ -56,32 +56,40 @@ void setup() {
 
 }
 
-String host = "shyest-cylinders.000webhostapp.com";     // Testing Website
-String i = "";
+String host = "harshnigm.pythonanywhere.com";     // Testing Website
+String stream_id = "/park/create/";
+String save_request = "";
 String request = "";
+
+String sendIR = "";
+String sendURI = "";
+String prev_request = "";
+boolean temp  = false;
 
 void loop() {
 
   // Reading the sensors in the Slots
   int ir1 = digitalRead(ir_slot1);
   int ir2 = digitalRead(ir_slot2);
+  int ir3 = 0;
+  int ir4 = 0;
 
-  if(ir1 == 1){     
-    i = SendWithMessage(host,"zyro/1.html/1.html");
-    digitalWrite(ledpin,1);
-    PrintOnMyLocalIP(i);
-  }
-
-  if(ir2 == 1){     
-    i = SendWithMessage(host,"zyro/1.html/1.html");
-    digitalWrite(ledpin,1);
-    PrintOnMyLocalIP(i);
-  }
+  sendIR = String(ir1) + String(ir2) + String(ir3) + String(ir4);
+  sendURI = stream_id + sendIR;
   
+  if(temp == false){
+    temp = true;
+    prev_request = sendIR;
+    save_request = SendWithMessage(host,sendURI);
+  }
+
+  else if(prev_request == sendIR){
+    // Do nothing 
+  }
+
   else{
-    i = SendWithMessage(host,"");
-    digitalWrite(ledpin,0);
-    PrintOnMyLocalIP(i);
+    prev_request = sendIR;
+    save_request = SendWithMessage(host,sendURI);
   }
   
 }
@@ -103,4 +111,3 @@ void PrintOnMyLocalIP(String i){
   Serial.println(i);
  
 }
-
