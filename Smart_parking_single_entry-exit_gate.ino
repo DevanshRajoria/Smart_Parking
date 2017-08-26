@@ -1,19 +1,19 @@
 //                                        ************************ENTRY GATE CONTROL***************************
+#include<LiquidCrystal.h>
+
+
+LiquidCrystal lcd(12,11,5,4,3,2);
 
 // IR Sensor Pins
-int ir_sen1 = 2;
-int ir_sen2 = 3;
+int ir_sen1 = 23;
+int ir_sen2 = 22;
 
 // Led Pins
-int ledpin = 13;
-int parking_full_led = 12;
-int parking_empty_led = 11;
+int ledpin = 32;
+int parking_full_led = 31;
+int parking_empty_led = 30;
 
-// Motor Pins
-int m1_forward;
-int m1_backward;
-
-int MAX_SLOTS = 3;      // Maximum Parking Slots Available
+int MAX_SLOTS = 2;      // Maximum Parking Slots Available
 
 int count = -1;        
 boolean entry_flag1 = false;
@@ -33,6 +33,8 @@ void setup(){
   pinMode(parking_full_led,OUTPUT);
   pinMode(parking_empty_led,OUTPUT);
 
+  lcd.begin(16,2);
+  
   Serial.begin(9600);
 }
 
@@ -44,12 +46,12 @@ void loop(){
   if((ir1 == 1 && temp2 == false) || temp1 == true){
     temp1 = true;
     entry_gate(ir1,ir2);
-    delay(500);   
+    delay(500);
   }
   else if((ir2 == 1 && temp1 == false) || temp2 == true){
     temp2 = true;
-    exit_gate(ir1,ir2);  
-    delay(500);
+    exit_gate(ir1,ir2);
+    delay(500);  
   }
 }
 
@@ -70,8 +72,10 @@ void entry_gate(int ir1,int ir2){       // Function for entry
     }
     Serial.println("ENTRY :");
     Serial.println(count);
+    
  }
  else{
+    temp1 = false;
     lcd_display_full();
     digitalWrite(parking_full_led,1);
  }
@@ -112,10 +116,14 @@ void gate_closed(){           // Parking Gate Closed
   digitalWrite(ledpin,0);
 }
 
-void lcd_display_Welcome(){   
-  
+void lcd_display_Welcome(){
+  lcd.clear();   
+  lcd.print("Welcome To Smart");
+  lcd.setCursor(0,1);
+  lcd.print("Parking");
 }
 
 void lcd_display_full(){
-  
+  lcd.clear();
+  lcd.print("Parking Full");  
 }
